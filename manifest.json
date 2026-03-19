@@ -2,7 +2,7 @@
   "name": "Adelaide City Match Timer",
   "short_name": "City Timer",
   "description": "Official match timer for Adelaide City Football Club. Tracks 1st half, 2nd half, stoppage time and total match time.",
-  "start_url": "/city-match-timer/index.html",
+  "start_url": "/city-match-timer/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#111111",
