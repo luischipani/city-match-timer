@@ -4,12 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#111111">
-<meta name="description" content="Match timer for Adelaide City Football Club">
-<meta name="application-name" content="Adelaide City Match Timer">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="City Timer">
-<link rel="manifest" href="https://luischipani.github.io/city-match-timer/manifest.json">
 <title>Adelaide City Match Timer</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -24,41 +21,39 @@
 
   .total-bar { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 12px; padding: 14px 20px; text-align: center; margin-bottom: 16px; }
   .total-label { font-size: 11px; color: #666; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; }
-  .total-time { font-size: 48px; font-weight: 500; color: #fff; font-variant-numeric: tabular-nums; letter-spacing: 3px; }
+  .total-time { font-size: 52px; font-weight: 300; color: #fff; font-variant-numeric: tabular-nums; letter-spacing: 3px; }
 
   .phase-indicator { text-align: center; font-size: 12px; color: #555; margin-bottom: 14px; letter-spacing: 1px; text-transform: uppercase; }
   .phase-indicator .phase { color: #c8102e; }
 
   .halves { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-  .half-card { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 12px; padding: 14px 16px; }
+  .half-card { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 12px; padding: 14px 16px; transition: border-color 0.2s; }
   .half-card.active { border-color: #c8102e; }
   .half-card.overtime { border-color: #f59e0b; }
   .half-card.complete { border-color: #333; opacity: 0.5; }
   .half-label { font-size: 11px; color: #666; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
-  .dot { width: 6px; height: 6px; border-radius: 50%; background: #c8102e; display: none; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: #c8102e; display: none; animation: pulse 1s infinite; }
   .half-card.active .dot { display: block; }
   .half-card.overtime .dot { display: block; background: #f59e0b; }
-  .countdown { font-size: 38px; font-weight: 500; font-variant-numeric: tabular-nums; letter-spacing: 2px; color: #fff; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .countdown { font-size: 38px; font-weight: 400; font-variant-numeric: tabular-nums; letter-spacing: 2px; color: #fff; }
   .half-card.active .countdown { color: #c8102e; }
   .half-card.overtime .countdown { color: #f59e0b; }
   .half-card.complete .countdown { color: #444; }
   .stoppage-badge { font-size: 11px; color: #f59e0b; margin-top: 5px; display: none; }
 
-  .btn-main { background: transparent; border: 0.5px solid #c8102e; border-radius: 10px; color: #c8102e; font-size: 17px; font-weight: 500; padding: 16px; cursor: pointer; width: 100%; margin-bottom: 10px; transition: background 0.15s; }
-  .btn-main:hover { background: rgba(200,16,46,0.1); }
-  .btn-main:active { transform: scale(0.98); }
+  .btn-main { background: transparent; border: 0.5px solid #c8102e; border-radius: 10px; color: #c8102e; font-size: 17px; font-weight: 500; padding: 16px; cursor: pointer; width: 100%; margin-bottom: 10px; transition: background 0.15s; -webkit-tap-highlight-color: transparent; }
+  .btn-main:active { background: rgba(200,16,46,0.15); transform: scale(0.98); }
 
   .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-  .btn { background: transparent; border: 0.5px solid #333; border-radius: 10px; color: #ccc; font-size: 14px; font-weight: 500; padding: 14px 10px; cursor: pointer; text-align: center; transition: background 0.15s; }
-  .btn:hover { background: #1e1e1e; }
-  .btn:active { transform: scale(0.97); }
-  .btn.next { border-color: #555; color: #aaa; }
+  .btn { background: transparent; border: 0.5px solid #333; border-radius: 10px; color: #ccc; font-size: 14px; font-weight: 500; padding: 14px 10px; cursor: pointer; text-align: center; -webkit-tap-highlight-color: transparent; }
+  .btn:active { background: #1e1e1e; transform: scale(0.97); }
   .btn.danger { border-color: #4a1a1a; color: #e24b4a; }
-  .btn.danger:hover { background: rgba(226,75,74,0.08); }
+  .btn.danger:active { background: rgba(226,75,74,0.1); }
 
   .stoppage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-  .stop-btn { background: transparent; border: 0.5px solid #3a3420; border-radius: 10px; color: #f59e0b; font-size: 13px; padding: 12px 8px; cursor: pointer; text-align: center; }
-  .stop-btn:hover { background: rgba(245,158,11,0.08); }
+  .stop-btn { background: transparent; border: 0.5px solid #3a3420; border-radius: 10px; color: #f59e0b; font-size: 14px; font-weight: 500; padding: 13px 8px; cursor: pointer; text-align: center; -webkit-tap-highlight-color: transparent; }
+  .stop-btn:active { background: rgba(245,158,11,0.1); transform: scale(0.97); }
 
   .status-bar { text-align: center; padding: 6px; font-size: 12px; color: #555; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
   .status-bar .hl { color: #c8102e; }
@@ -100,7 +95,7 @@
   <button class="btn-main" id="startBtn" onclick="toggleStart()">Start 1st Half</button>
 
   <div class="btn-row">
-    <button class="btn next hidden" id="halfBtn" onclick="nextPhase()">End 1st Half</button>
+    <button class="btn hidden" id="halfBtn" onclick="nextPhase()">End 1st Half</button>
     <button class="btn danger" onclick="resetAll()">Reset All</button>
   </div>
 
@@ -116,115 +111,148 @@
 </div>
 
 <script>
-  (function(){
-    const HALF = 45 * 60;
-    let phase = 0, running = false, interval = null;
-    let elapsed1 = 0, elapsed2 = 0, stoppage1 = 0, stoppage2 = 0, totalElapsed = 0;
+(function(){
+  const HALF = 45 * 60;
 
-    function fmt(s) {
-      let neg = s < 0, abs = Math.abs(s);
-      let m = Math.floor(abs / 60), sec = abs % 60;
-      return (neg ? '+' : '') + m + ':' + (sec < 10 ? '0' : '') + sec;
+  let phase = 0;
+  let interval = null;
+  let half1Elapsed = 0;
+  let half2Elapsed = 0;
+  let totalElapsed = 0;
+  let runStartTime = null;
+  let stoppage1 = 0;
+  let stoppage2 = 0;
+
+  function isRunning() { return runStartTime !== null; }
+
+  function getLive() {
+    let extra = isRunning() ? Math.floor((Date.now() - runStartTime) / 1000) : 0;
+    let h1 = half1Elapsed + (phase === 1 ? extra : 0);
+    let h2 = half2Elapsed + (phase === 3 ? extra : 0);
+    let tot = totalElapsed + ((phase === 1 || phase === 3) ? extra : 0);
+    return { h1, h2, tot };
+  }
+
+  function fmt(s) {
+    let neg = s < 0, abs = Math.abs(s);
+    let m = Math.floor(abs / 60), sec = abs % 60;
+    return (neg ? '+' : '') + m + ':' + (sec < 10 ? '0' : '') + sec;
+  }
+  function fmtTotal(s) {
+    let m = Math.floor(s / 60), sec = s % 60;
+    return m + ':' + (sec < 10 ? '0' : '') + sec;
+  }
+
+  function render() {
+    let { h1, h2, tot } = getLive();
+    document.getElementById('totalTime').textContent = fmtTotal(tot);
+
+    let rem1 = HALF + stoppage1 * 60 - h1;
+    let rem2 = HALF + stoppage2 * 60 - h2;
+    document.getElementById('cd1').textContent = fmt(rem1);
+    document.getElementById('cd2').textContent = fmt(rem2);
+
+    let c1 = document.getElementById('card1'), c2 = document.getElementById('card2');
+    c1.className = 'half-card'; c2.className = 'half-card';
+
+    if (phase === 1 || phase === 2) c1.classList.add(rem1 < 0 ? 'overtime' : 'active');
+    else if (phase > 2) c1.classList.add('complete');
+    if (phase === 3 || phase === 4) c2.classList.add(rem2 < 0 ? 'overtime' : 'active');
+    else if (phase > 4) c2.classList.add('complete');
+
+    let s1 = document.getElementById('stop1'), s2 = document.getElementById('stop2');
+    s1.style.display = stoppage1 > 0 ? 'block' : 'none';
+    s2.style.display = stoppage2 > 0 ? 'block' : 'none';
+    if (stoppage1 > 0) s1.textContent = '+' + stoppage1 + ' min stoppage';
+    if (stoppage2 > 0) s2.textContent = '+' + stoppage2 + ' min stoppage';
+  }
+
+  function updateUI() {
+    let sb = document.getElementById('startBtn');
+    let hb = document.getElementById('halfBtn');
+    let ph = document.getElementById('phaseLabel');
+    let st = document.getElementById('statusBar');
+    let sr = document.getElementById('stoppageRow');
+
+    hb.classList.add('hidden'); sr.classList.add('hidden');
+
+    if (phase === 0) {
+      sb.textContent = 'Start 1st Half'; sb.classList.remove('hidden');
+      ph.textContent = 'Pre-match'; st.innerHTML = 'Ready to kick off';
+    } else if (phase === 1) {
+      sb.textContent = 'Pause'; sb.classList.remove('hidden');
+      sr.classList.remove('hidden');
+      ph.textContent = '1st Half'; st.innerHTML = '<span class="hl">1st Half</span> in progress';
+    } else if (phase === 2) {
+      sb.textContent = 'Resume 1st Half'; sb.classList.remove('hidden');
+      hb.textContent = 'End 1st Half'; hb.classList.remove('hidden');
+      sr.classList.remove('hidden');
+      ph.textContent = '1st Half — Paused'; st.innerHTML = 'Paused';
+    } else if (phase === 3) {
+      sb.textContent = 'Pause'; sb.classList.remove('hidden');
+      sr.classList.remove('hidden');
+      ph.textContent = '2nd Half'; st.innerHTML = '<span class="hl">2nd Half</span> in progress';
+    } else if (phase === 4) {
+      sb.textContent = 'Resume 2nd Half'; sb.classList.remove('hidden');
+      hb.textContent = 'End Match'; hb.classList.remove('hidden');
+      sr.classList.remove('hidden');
+      ph.textContent = '2nd Half — Paused'; st.innerHTML = 'Paused';
+    } else if (phase === 5) {
+      sb.classList.add('hidden');
+      ph.textContent = 'Full Time'; st.innerHTML = '<span class="hl">Full Time</span>';
     }
-    function fmtTotal(s) {
-      let m = Math.floor(s / 60), sec = s % 60;
-      return m + ':' + (sec < 10 ? '0' : '') + sec;
-    }
+  }
 
-    function render() {
-      document.getElementById('totalTime').textContent = fmtTotal(totalElapsed);
-      let rem1 = HALF + stoppage1 * 60 - elapsed1;
-      let rem2 = HALF + stoppage2 * 60 - elapsed2;
-      document.getElementById('cd1').textContent = fmt(rem1);
-      document.getElementById('cd2').textContent = fmt(rem2);
+  function startTicking() {
+    runStartTime = Date.now();
+    if (interval) clearInterval(interval);
+    interval = setInterval(render, 500);
+  }
 
-      let c1 = document.getElementById('card1'), c2 = document.getElementById('card2');
-      c1.className = 'half-card'; c2.className = 'half-card';
+  function stopTicking() {
+    let extra = isRunning() ? Math.floor((Date.now() - runStartTime) / 1000) : 0;
+    if (phase === 1 || phase === 2) { half1Elapsed += extra; totalElapsed += extra; }
+    if (phase === 3 || phase === 4) { half2Elapsed += extra; totalElapsed += extra; }
+    runStartTime = null;
+    if (interval) { clearInterval(interval); interval = null; }
+  }
 
-      if (phase === 1 || phase === 2) c1.classList.add(rem1 < 0 ? 'overtime' : 'active');
-      else if (phase > 2) c1.classList.add('complete');
-      if (phase === 3 || phase === 4) c2.classList.add(rem2 < 0 ? 'overtime' : 'active');
-      else if (phase > 4) c2.classList.add('complete');
+  // Resync display immediately when screen unlocks or tab regains focus
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden && isRunning()) render();
+  });
 
-      let s1 = document.getElementById('stop1'), s2 = document.getElementById('stop2');
-      if (stoppage1 > 0) { s1.style.display = 'block'; s1.textContent = '+' + stoppage1 + ' min stoppage'; }
-      if (stoppage2 > 0) { s2.style.display = 'block'; s2.textContent = '+' + stoppage2 + ' min stoppage'; }
-    }
-
-    function updateUI() {
-      let sb = document.getElementById('startBtn');
-      let hb = document.getElementById('halfBtn');
-      let ph = document.getElementById('phaseLabel');
-      let st = document.getElementById('statusBar');
-      let sr = document.getElementById('stoppageRow');
-
-      hb.classList.add('hidden'); sr.classList.add('hidden');
-
-      if (phase === 0) {
-        sb.textContent = 'Start 1st Half'; sb.classList.remove('hidden');
-        ph.textContent = 'Pre-match'; st.innerHTML = 'Ready to kick off';
-      } else if (phase === 1) {
-        sb.textContent = 'Pause'; sb.classList.remove('hidden');
-        sr.classList.remove('hidden');
-        ph.textContent = '1st Half'; st.innerHTML = '<span class="hl">1st Half</span> in progress';
-      } else if (phase === 2) {
-        sb.textContent = 'Resume 1st Half'; sb.classList.remove('hidden');
-        hb.textContent = 'End 1st Half'; hb.classList.remove('hidden');
-        sr.classList.remove('hidden');
-        ph.textContent = '1st Half — Paused'; st.innerHTML = 'Paused';
-      } else if (phase === 3) {
-        sb.textContent = 'Pause'; sb.classList.remove('hidden');
-        sr.classList.remove('hidden');
-        ph.textContent = '2nd Half'; st.innerHTML = '<span class="hl">2nd Half</span> in progress';
-      } else if (phase === 4) {
-        sb.textContent = 'Resume 2nd Half'; sb.classList.remove('hidden');
-        hb.textContent = 'End Match'; hb.classList.remove('hidden');
-        sr.classList.remove('hidden');
-        ph.textContent = '2nd Half — Paused'; st.innerHTML = 'Paused';
-      } else if (phase === 5) {
-        sb.classList.add('hidden');
-        ph.textContent = 'Full Time'; st.innerHTML = '<span class="hl">Full Time</span>';
-      }
-    }
-
-    function tick() {
-      totalElapsed++;
-      if (phase === 1 || phase === 2) elapsed1++;
-      if (phase === 3 || phase === 4) elapsed2++;
-      render();
-    }
-
-    window.toggleStart = function() {
-      if (phase === 0) { phase = 1; running = true; interval = setInterval(tick, 1000); }
-      else if (phase === 1 && running) { running = false; clearInterval(interval); interval = null; phase = 2; }
-      else if (phase === 2) { phase = 1; running = true; interval = setInterval(tick, 1000); }
-      else if (phase === 3 && running) { running = false; clearInterval(interval); interval = null; phase = 4; }
-      else if (phase === 4) { phase = 3; running = true; interval = setInterval(tick, 1000); }
-      updateUI();
-    };
-
-    window.nextPhase = function() {
-      if (phase === 2) { running = false; if(interval) clearInterval(interval); phase = 3; running = true; interval = setInterval(tick, 1000); }
-      else if (phase === 4) { running = false; if(interval) clearInterval(interval); interval = null; phase = 5; }
-      updateUI();
-    };
-
-    window.addStoppage = function(m) {
-      if (phase === 1 || phase === 2) stoppage1 += m;
-      if (phase === 3 || phase === 4) stoppage2 += m;
-      render();
-    };
-
-    window.resetAll = function() {
-      running = false; if(interval) clearInterval(interval); interval = null;
-      phase = 0; elapsed1 = elapsed2 = stoppage1 = stoppage2 = totalElapsed = 0;
-      document.getElementById('stop1').style.display = 'none';
-      document.getElementById('stop2').style.display = 'none';
-      render(); updateUI();
-    };
-
+  window.toggleStart = function() {
+    if (phase === 0) { phase = 1; startTicking(); }
+    else if (phase === 1) { stopTicking(); phase = 2; }
+    else if (phase === 2) { phase = 1; startTicking(); }
+    else if (phase === 3) { stopTicking(); phase = 4; }
+    else if (phase === 4) { phase = 3; startTicking(); }
     render(); updateUI();
-  })();
+  };
+
+  window.nextPhase = function() {
+    if (phase === 2) { phase = 3; startTicking(); }
+    else if (phase === 4) { stopTicking(); phase = 5; }
+    render(); updateUI();
+  };
+
+  window.addStoppage = function(m) {
+    if (phase === 1 || phase === 2) stoppage1 += m;
+    if (phase === 3 || phase === 4) stoppage2 += m;
+    render();
+  };
+
+  window.resetAll = function() {
+    stopTicking();
+    phase = 0;
+    half1Elapsed = half2Elapsed = totalElapsed = stoppage1 = stoppage2 = 0;
+    runStartTime = null;
+    render(); updateUI();
+  };
+
+  render(); updateUI();
+})();
 </script>
 </body>
 </html>
