@@ -225,16 +225,31 @@
 
   window.toggleStart = function() {
     if (phase === 0) { phase = 1; startTicking(); }
-    else if (phase === 1) { stopTicking(); phase = 2; }
+    else if (phase === 1) {
+      if (!confirm('Pause the clock?')) return;
+      stopTicking(); phase = 2;
+    }
     else if (phase === 2) { phase = 1; startTicking(); }
-    else if (phase === 3) { stopTicking(); phase = 4; }
+    else if (phase === 3) {
+      if (!confirm('Pause the clock?')) return;
+      stopTicking(); phase = 4;
+    }
     else if (phase === 4) { phase = 3; startTicking(); }
     render(); updateUI();
   };
 
   window.nextPhase = function() {
-    if (phase === 2) { phase = 3; startTicking(); }
-    else if (phase === 4) { stopTicking(); phase = 5; }
+    if (phase === 2) {
+      // 2nd half always starts the total clock from exactly 45:00
+      totalElapsed = HALF;
+      half2Elapsed = 0;
+      phase = 3;
+      startTicking();
+    }
+    else if (phase === 4) {
+      if (!confirm('End the match?')) return;
+      stopTicking(); phase = 5;
+    }
     render(); updateUI();
   };
 
@@ -245,6 +260,7 @@
   };
 
   window.resetAll = function() {
+    if (!confirm('Reset everything? This cannot be undone.')) return;
     stopTicking();
     phase = 0;
     half1Elapsed = half2Elapsed = totalElapsed = stoppage1 = stoppage2 = 0;
